@@ -1,25 +1,17 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
-import Navbar from './components/Layout/Navbar';
-import Home from './components/Home';
-import LoginPage from './pages/LoginPage';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
 
-const App = () => {
-    return (
-        <AuthProvider>
-            <Router>
-                <Navbar />
-                <Switch>
-                    <Route path="/" component={Home} exact />
-                    <Route path="/login" component={LoginPage} />
-                    <Route path="/register" component={RegisterPage} />
-                </Switch>
-            </Router>
-        </AuthProvider>
-    );
-};
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/dashboard" element={<div>Dashboard</div>} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;
