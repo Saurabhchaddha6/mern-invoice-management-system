@@ -1,27 +1,37 @@
-import User from "../models/userModel";
-import Invoice from require("../models/invoiceModel");
+const Invoice = require( "../models/invoiceModel")
+const User = require("../models/userModel")
 
-const createInvoice = async(userId, invoiceData) =>{
-    const session = await Invoice.startSession();
-    session.startTransaction();
-    try {
-        const newInvoice = await Invoice.create([{ ...invoiceData, user: userId }], { session });
-        await User.findByIdAndUpdate(
-        userId,
-        { $push: { invoices: newInvoice[0]._id } },
-        { session }
-        );
+const createInvoice = async (userId, invoiceData) => {
+  if (!userId || !invoiceData) {
+    throw new Error('userId or invoiceData is missing');
+  }
 
-        await session.commitTransaction();
-        return newInvoice[0];
+  const session = await Invoice.startSession();
+  session.startTransaction();
+  try {
+    console.log('Creating invoice with data:', invoiceData);
+
+    const newInvoice = await Invoice.create([{ ...invoiceData, user: userId }], { session });
+    
+    if (!newInvoice[0]) {
+      throw new Error('Invoice creation failed');
     }
-    catch(error){
-        await session.abortTransaction();
-        throw error;
-    }
-    finally{
-        session.endSession();
-    }
+
+    await User.findByIdAndUpdate(
+      userId,
+      { $push: { invoices: newInvoice[0]._id } },
+      { session }
+    );
+
+    await session.commitTransaction();
+    return newInvoice[0];
+  } catch (error) {
+    console.error('Error in createInvoice:', error.message);
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
 
 const getInvoices = async(userId)=>{
@@ -61,4 +71,4 @@ const deleteInvoice = async(invoiceId,userId)=>{
     }
 };
 
-export default {deleteInvoice,createInvoice,getInvoiceById,getInvoices};
+module.exports  = {deleteInvoice,createInvoice,getInvoiceById,getInvoices};

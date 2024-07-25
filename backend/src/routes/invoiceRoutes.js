@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const invoiceController = require('../controllers/invoiceController');
+const invoiceController = require('../controller/invoiceController');
 
-
-router.use(auth);  // Protect all invoice routes
 
 router.post('/', invoiceController.createInvoice);
 router.get('/', invoiceController.getInvoices);
